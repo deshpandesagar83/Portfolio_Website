@@ -5,7 +5,6 @@ import { siteContent } from '@/content/site';
 import { Header } from './Header';
 
 class NoopIntersectionObserver {
-  constructor(_callback: unknown) {}
   observe() {}
   unobserve() {}
   disconnect() {}
