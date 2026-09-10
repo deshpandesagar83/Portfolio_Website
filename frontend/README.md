@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio frontend — V1
 
-## Getting Started
+Static Next.js site: one page, a hero section (portrait photo + brief) and a
+comments placeholder, linked by an anchor menu. Builds to a plain `out/`
+directory for S3 + CloudFront hosting.
 
-First, run the development server:
+Design spec: `../docs/superpowers/specs/2026-09-10-portfolio-frontend-v1-design.md`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Commands
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Command | What it does |
+|---|---|
+| `npm run dev` | Local dev server on :3000 |
+| `npm run build` | Production build; emits `out/` |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm test` | Vitest unit tests |
+| `npm run test:e2e` | Rebuilds the export, then runs Playwright against it |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Replacing the placeholder content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All copy, links, and image references live in `content/site.ts`. To go live:
 
-## Learn More
+1. Edit `content/site.ts` — the `TODO: replace before launch` block at the top
+   lists everything required.
+2. Add the real portrait to `public/images/`. **It must be portrait
+   orientation, at or near 3:4.** A landscape photo needs the hero grid in
+   `components/sections/Hero.tsx` revisited.
+3. Add the real logo to `public/images/`.
+4. Run `npm test` — content invariants (unique menu ids, portrait ratios,
+   https socials) are asserted, and the dead-anchor guard in
+   `app/page.test.tsx` fails if a menu item points at a missing section.
 
-To learn more about Next.js, take a look at the following resources:
+## Constraints worth knowing before changing anything
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `output: 'export'` in `next.config.ts`. No route handlers, server actions,
+  middleware, or ISR — the build will fail.
+- `components/layout/Header.tsx` is the only client component. Everything else
+  renders at build time.
+- E2E tests run against the exported `out/`, not the dev server, so they
+  exercise the same files that get deployed.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Not in this app
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Terraform, S3/CloudFront/Route 53 configuration, CI/CD, any backend, live
+comments, the AI chat. See the design spec for the full out-of-scope list.
