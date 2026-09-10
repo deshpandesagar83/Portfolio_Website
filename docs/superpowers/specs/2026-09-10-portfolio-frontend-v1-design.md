@@ -27,7 +27,9 @@ Inactive target. It is not dropped, only deferred.
 | Question | Decision |
 |---|---|
 | Page 1 / Page 2 structure | One route, two anchor-linked scroll sections |
-| Splash page | Not in scope |
+| Page 1's role | It **is** the hero section — the diagram's "Page 1" label is positional, not a separate page |
+| Portrait photo | Genuinely portrait orientation (taller than wide), despite the wireframe boxes reading landscape |
+| Splash page | Not in scope — the hero is the top of the page, not a gated intro |
 | Comments block | Styled "coming soon" placeholder; no form, no mock data |
 | Content available | None yet — placeholders, isolated in one file |
 | Styling | Tailwind CSS |
@@ -89,7 +91,7 @@ frontend/
       Socials.tsx
       Footer.tsx
     sections/
-      Brief.tsx
+      Hero.tsx           portrait photo + brief — the top of the page
       CommentsPlaceholder.tsx
     ui/
       Section.tsx        shared section wrapper (id, scroll-margin, spacing)
@@ -116,7 +118,7 @@ Logo/Menu/Socials strip, and the Page 1 / Page 2 content blocks.
 ```tsx
 <Header />
 <main>
-  <Brief />
+  <Hero />
   <CommentsPlaceholder />
 </main>
 <Footer />
@@ -137,15 +139,31 @@ Following the Inactive wireframe:
 | Band | Composition | Mobile (`< md`) |
 |---|---|---|
 | Header (sticky) | Logo left · Menu center · Socials right | Logo + hamburger toggle |
-| Section `#brief` | Photo left · Brief right | Stacked vertically |
+| Hero `#hero` | Portrait photo left · name, tagline, brief right | Stacked: photo, then text |
 | Section `#comments` | Photo left · Comments placeholder right | Stacked vertically |
 | Footer | Name, year, quiet repo link | Same |
 
 Mobile-first; the two-column arrangement engages at the `md` breakpoint.
 
-There is no separate hero or splash band. The `#brief` section is the top of the page and
-carries the page's single `<h1>` — `identity.name` with `identity.tagline` beneath it,
-above the brief copy.
+### The hero
+
+"Page 1" in the wireframe is the hero section, not a distinct page — the label is
+positional. It is the top of the document and carries the page's single `<h1>`
+(`identity.name`, with `identity.tagline` beneath), followed by the brief copy, beside the
+portrait.
+
+**The photo is portrait orientation** — taller than wide, notwithstanding the landscape-ish
+boxes in the wireframe. The layout is built around that: a `3:4` frame that anchors the left
+column and sets the hero's height, with the text column vertically centered against it.
+Getting this backwards would force a different grid, so it is fixed here rather than
+discovered during implementation.
+
+The hero fills a generous share of the first viewport (target `min-h-[85vh]` at `md` and up,
+natural height on mobile) so it reads as a hero, but it does **not** gate scrolling and there
+is no splash or intro animation — consistent with the earlier decision.
+
+The second section's photo is a secondary image and is also framed portrait, for consistency
+of rhythm down the page.
 
 ## Content model
 
@@ -159,10 +177,16 @@ type SiteContent = {
   meta:     { title: string; description: string };
   menu:     { id: string; label: string }[];
   socials:  { platform: string; label: string; href: string }[];
-  brief:    { heading: string; photo: ImageRef; body: string[] };
+  hero:     { photo: ImageRef; body: string[] };
   comments: { heading: string; photo: ImageRef; message: string };
 };
 ```
+
+The hero has no `heading` field of its own: its heading is the page `<h1>`, composed from
+`identity.name` and `identity.tagline`, so the name is defined in exactly one place.
+
+Both `photo` fields are portrait — `width` less than `height`, at a `3:4` ratio. The explicit
+dimensions are what reserve layout space and prevent shift while the image loads.
 
 `menu[].id` must equal the `id` of a section actually rendered on the page. This is the
 single source of truth for navigation, and it is asserted by a unit test so a dead anchor
@@ -179,7 +203,9 @@ brief copy, portrait image, logo, and social URLs.
 
 Placeholder images are neutral gray SVGs named `placeholder-portrait.svg` and
 `placeholder-logo.svg` — greppable by name, and visibly unfinished so nothing accidental
-ships. Replacing content means editing one file and dropping files into `public/images/`;
+ships. The portrait placeholder is authored at a true `3:4` portrait ratio (900 × 1200) so
+the placeholder occupies the same shape the real photo will, and the hero layout is never
+tuned against a stand-in of the wrong orientation. Replacing content means editing one file and dropping files into `public/images/`;
 no component changes.
 
 ## Data flow
@@ -194,7 +220,7 @@ JavaScript disabled.
 
 ### Navigation
 
-Menu items are plain `<a href="#brief">` anchors — real links, not scroll handlers. Smooth
+Menu items are plain `<a href="#hero">` anchors — real links, not scroll handlers. Smooth
 scrolling comes from CSS `scroll-behavior`, disabled under `prefers-reduced-motion`. Each
 section carries `scroll-margin-top` so its heading is not hidden behind the sticky header.
 `useScrollSpy` sets `aria-current="true"` on the link whose section is in view.
@@ -286,6 +312,8 @@ leaves the machine.
 ## Open items
 
 - Real content — name, tagline, brief copy, portrait, logo, social URLs — is not yet
-  available. The site ships with marked placeholders until supplied.
+  available. The site ships with marked placeholders until supplied. The portrait should be
+  supplied in portrait orientation at or near `3:4`; a landscape photo would need the hero
+  grid revisited.
 - Playwright browsers require a one-time `npx playwright install` on this machine.
 - Domain, hosting, and CI/CD remain the owner's work and are deliberately unaddressed here.
