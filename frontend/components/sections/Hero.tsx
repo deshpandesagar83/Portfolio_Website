@@ -18,7 +18,7 @@ export function Hero() {
           height={hero.photo.height}
           priority
           sizes="(min-width: 768px) 40vw, 100vw"
-          className="w-full max-w-sm rounded-sm border border-line"
+          className="mx-auto w-full max-w-sm rounded-sm border border-line md:mx-0"
         />
 
         <div>

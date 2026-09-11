@@ -13,7 +13,7 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
-  { ignores: ['out/**', 'e2e/**', 'playwright-report/**', 'test-results/**'] },
+  { ignores: ['e2e/**', 'playwright-report/**', 'test-results/**'] },
 ]);
 
 export default eslintConfig;

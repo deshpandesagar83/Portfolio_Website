@@ -27,8 +27,11 @@ test.describe('portfolio site, served from the static export', () => {
     const comments = page.locator('#comments');
     await expect(comments).toBeAttached();
     await expect(comments.getByText('Coming soon')).toBeAttached();
-    await expect(comments.locator('form')).toHaveCount(0);
-    await expect(comments.locator('input, textarea, button')).toHaveCount(0);
+    await expect(
+      comments.locator(
+        'form, input, textarea, select, iframe, button, [contenteditable], [role="button"], [role="textbox"]',
+      ),
+    ).toHaveCount(0);
   });
 
   test('serves a 404 page in the export', async ({ page }) => {

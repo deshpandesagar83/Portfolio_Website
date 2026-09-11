@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { siteContent } from './site';
+import { ICON_PATHS } from '@/components/layout/Socials';
 
 describe('siteContent', () => {
   it('gives every menu entry a non-empty id and label', () => {
@@ -36,5 +37,15 @@ describe('siteContent', () => {
 
   it('gives the hero at least one paragraph of copy', () => {
     expect(siteContent.hero.body.length).toBeGreaterThan(0);
+  });
+
+  it('keeps meta.title in sync with the identity name', () => {
+    expect(siteContent.meta.title).toContain(siteContent.identity.name);
+  });
+
+  it('has an icon path for every social platform', () => {
+    for (const social of siteContent.socials) {
+      expect(Object.keys(ICON_PATHS)).toContain(social.platform);
+    }
   });
 });

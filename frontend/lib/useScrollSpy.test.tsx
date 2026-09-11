@@ -71,8 +71,8 @@ describe('useScrollSpy', () => {
   it('prefers the section with the greater visible ratio', () => {
     render(<Probe />);
     fire([
-      { target: { id: 'hero' }, isIntersecting: true, intersectionRatio: 0.2 },
       { target: { id: 'comments' }, isIntersecting: true, intersectionRatio: 0.8 },
+      { target: { id: 'hero' }, isIntersecting: true, intersectionRatio: 0.2 },
     ]);
     expect(screen.getByRole('status').textContent).toBe('comments');
   });

@@ -6,7 +6,7 @@ export function CommentsPlaceholder() {
   const { comments } = siteContent;
 
   return (
-    <Section id="comments" className="py-20 md:py-28">
+    <Section id="comments" className="py-20 md:py-24">
       <div className="grid items-center gap-12 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
         <Image
           src={comments.photo.src}
@@ -14,7 +14,7 @@ export function CommentsPlaceholder() {
           width={comments.photo.width}
           height={comments.photo.height}
           sizes="(min-width: 768px) 40vw, 100vw"
-          className="w-full max-w-sm rounded-sm border border-line"
+          className="mx-auto w-full max-w-sm rounded-sm border border-line md:mx-0"
         />
 
         <div>

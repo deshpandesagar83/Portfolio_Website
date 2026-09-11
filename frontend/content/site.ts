@@ -10,6 +10,8 @@ import type { SiteContent } from './types';
 //   4. public/images/logo.svg — the personal logo
 //   5. socials — real profile URLs
 //   6. meta.siteUrl — the real domain once registered
+//   7. app/icon.svg — the favicon. This is the one placeholder that does NOT
+//      live under public/images/; replace the file in place.
 // Replacing content means editing this file and adding files to
 // public/images/. No component changes are needed.
 // ---------------------------------------------------------------------------

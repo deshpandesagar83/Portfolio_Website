@@ -23,9 +23,11 @@ describe('CommentsPlaceholder', () => {
 
   it('offers no interactive controls, because there is no backend yet', () => {
     const { container } = render(<CommentsPlaceholder />);
-    expect(container.querySelector('form')).toBeNull();
-    expect(screen.queryByRole('textbox')).toBeNull();
-    expect(screen.queryByRole('button')).toBeNull();
+    expect(
+      container.querySelector(
+        'form, input, textarea, select, iframe, button, [contenteditable], [role="button"], [role="textbox"]',
+      ),
+    ).toBeNull();
   });
 
   it('exposes the comments anchor id for the menu', () => {

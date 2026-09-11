@@ -11,6 +11,7 @@ export function Logo() {
         alt={logo.alt}
         width={logo.width}
         height={logo.height}
+        priority
         className="h-9 w-9"
       />
       <span className="font-display text-lg tracking-tight">{name}</span>
