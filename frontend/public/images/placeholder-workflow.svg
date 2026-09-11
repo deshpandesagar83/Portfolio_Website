@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="Placeholder workflow diagram">
+  <rect width="1600" height="900" fill="#141417"/>
+  <rect x="8" y="8" width="1584" height="884" fill="none" stroke="#3a3a44" stroke-width="4" stroke-dasharray="24 16"/>
+  <g fill="#1a1a1f" stroke="#3a3a44" stroke-width="3">
+    <rect x="180" y="380" width="240" height="140" rx="8"/>
+    <rect x="680" y="380" width="240" height="140" rx="8"/>
+    <rect x="1180" y="380" width="240" height="140" rx="8"/>
+  </g>
+  <g stroke="#c8a24a" stroke-width="4">
+    <path d="M420 450h220" fill="none"/>
+    <path d="M920 450h220" fill="none"/>
+  </g>
+  <g fill="#c8a24a">
+    <path d="M640 435l40 15-40 15z"/>
+    <path d="M1140 435l40 15-40 15z"/>
+  </g>
+  <text x="800" y="700" fill="#6f6f7d" font-family="system-ui, sans-serif" font-size="44" text-anchor="middle">PLACEHOLDER WORKFLOW 16:9</text>
+</svg>

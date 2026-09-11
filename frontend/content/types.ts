@@ -47,3 +47,27 @@ export type SiteContent = {
     message: string;
   };
 };
+
+/** A unit of a project's explanation. `steps` is a real ordered sequence:
+ *  a workflow's numbering is meaning, not decoration. */
+export type WorkflowBlock =
+  | { kind: 'para'; text: string }
+  | { kind: 'steps'; items: string[] }
+  | { kind: 'note'; text: string };
+
+export type WorkflowProject = {
+  /** Anchor id and React key — /workflow/#slug. Lowercase, digits, hyphens. */
+  slug: string;
+  /** The panel's title: the project name. */
+  name: string;
+  /** The diagram or gif. Landscape, unlike the site's portrait photos. */
+  image: ImageRef;
+  body: WorkflowBlock[];
+};
+
+export type WorkflowContent = {
+  meta: { title: string; description: string };
+  /** The page <h1>. */
+  heading: string;
+  projects: WorkflowProject[];
+};
