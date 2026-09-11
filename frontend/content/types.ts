@@ -7,10 +7,11 @@ export type ImageRef = {
   height: number;
 };
 
-/** `id` must match the anchor id of a section rendered on the page.
- *  app/page.test.tsx enforces this. */
+/** `href` must be a root-relative path with a trailing slash, matching
+ *  next.config.ts's `trailingSlash: true`, and must resolve to a page that
+ *  exists. content/site.test.ts enforces both. */
 export type MenuItem = {
-  id: string;
+  href: string;
   label: string;
 };
 

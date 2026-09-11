@@ -1,18 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { siteContent } from '@/content/site';
-import { useScrollSpy } from '@/lib/useScrollSpy';
+import { usePathname } from 'next/navigation';
 import { Logo } from './Logo';
 import { Menu } from './Menu';
 import { Socials } from './Socials';
 
-// Module scope, so the array identity is stable across renders and the
-// observer in useScrollSpy subscribes once.
-const SECTION_IDS = siteContent.menu.map((item) => item.id);
-
 export function Header() {
-  const activeId = useScrollSpy(SECTION_IDS);
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -20,8 +15,8 @@ export function Header() {
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4 md:px-12">
         <Logo />
 
-        <nav aria-label="Section navigation" className="hidden md:block">
-          <Menu activeId={activeId} className="flex items-center gap-8" />
+        <nav aria-label="Primary navigation" className="hidden md:block">
+          <Menu activePath={pathname} className="flex items-center gap-8" />
         </nav>
 
         <div className="flex items-center gap-4">
@@ -59,11 +54,11 @@ export function Header() {
       {isMobileMenuOpen && (
         <nav
           id="mobile-menu"
-          aria-label="Mobile section navigation"
+          aria-label="Mobile navigation"
           className="border-t border-line px-6 py-4 md:hidden"
         >
           <Menu
-            activeId={activeId}
+            activePath={pathname}
             onNavigate={() => setIsMobileMenuOpen(false)}
             className="flex flex-col gap-4"
           />
