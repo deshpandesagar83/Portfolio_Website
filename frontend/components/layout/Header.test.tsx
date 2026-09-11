@@ -80,7 +80,9 @@ describe('Header', () => {
   it('renders the logo with its alt text', () => {
     pathnameRef.current = '/';
     render(<Header />);
-    expect(screen.getByAltText(siteContent.identity.logo.alt)).toBeInTheDocument();
+    const logo = screen.getByAltText(siteContent.identity.logo.alt);
+    expect(logo).toBeInTheDocument();
+    expect(logo.closest('a')).toHaveAttribute('href', '/');
   });
 
   it('toggles the mobile menu open and closed', async () => {

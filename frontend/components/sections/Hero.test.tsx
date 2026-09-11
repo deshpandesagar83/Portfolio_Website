@@ -31,7 +31,7 @@ describe('Hero', () => {
     expect(screen.getByAltText(siteContent.hero.photo.alt)).toBeInTheDocument();
   });
 
-  it('exposes the hero anchor id for the menu', () => {
+  it('exposes the hero anchor id for the e2e locator', () => {
     const { container } = render(<Hero />);
     expect(container.querySelector('#hero')).not.toBeNull();
   });

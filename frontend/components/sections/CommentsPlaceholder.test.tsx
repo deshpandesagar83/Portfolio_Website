@@ -30,7 +30,7 @@ describe('CommentsPlaceholder', () => {
     ).toBeNull();
   });
 
-  it('exposes the comments anchor id for the menu', () => {
+  it('exposes the comments anchor id for the e2e locator', () => {
     const { container } = render(<CommentsPlaceholder />);
     expect(container.querySelector('#comments')).not.toBeNull();
   });

@@ -27,6 +27,12 @@ function u16be(value: number): Buffer {
   return buffer;
 }
 
+function u16le(value: number): Buffer {
+  const buffer = Buffer.alloc(2);
+  buffer.writeUInt16LE(value);
+  return buffer;
+}
+
 /** A PNG containing nothing but the signature and an IHDR header. */
 function png(width: number, height: number): Buffer {
   const widthHeight = Buffer.alloc(8);
@@ -137,8 +143,33 @@ describe('readImageDimensions', () => {
   });
 
   it('throws on a format it cannot read rather than guessing', () => {
-    const gif = Buffer.concat([Buffer.from('GIF89a', 'latin1'), Buffer.alloc(10)]);
-    expect(() => readImageDimensions(fixture('a.gif', gif))).toThrow(/unrecognized image format/);
+    const bmp = Buffer.concat([Buffer.from('BM', 'latin1'), Buffer.alloc(10)]);
+    expect(() => readImageDimensions(fixture('a.bmp', bmp))).toThrow(/unrecognized image format/);
+  });
+
+  it('reads GIF89a dimensions from the logical screen descriptor', () => {
+    const gif = Buffer.concat([
+      Buffer.from('GIF89a', 'latin1'),
+      u16le(320),
+      u16le(240),
+      Buffer.from([0x00, 0x00, 0x00]), // packed fields, background color index, pixel aspect ratio
+    ]);
+    expect(readImageDimensions(fixture('a.gif', gif))).toEqual({ width: 320, height: 240 });
+  });
+
+  it('reads GIF87a dimensions from the logical screen descriptor', () => {
+    const gif = Buffer.concat([
+      Buffer.from('GIF87a', 'latin1'),
+      u16le(64),
+      u16le(48),
+      Buffer.from([0x00, 0x00, 0x00]),
+    ]);
+    expect(readImageDimensions(fixture('b.gif', gif))).toEqual({ width: 64, height: 48 });
+  });
+
+  it('throws on a truncated GIF rather than returning nonsense', () => {
+    const truncated = Buffer.concat([Buffer.from('GIF89a', 'latin1'), Buffer.from([0x01, 0x00])]);
+    expect(() => readImageDimensions(fixture('c.gif', truncated))).toThrow(/truncated GIF/);
   });
 
   it('throws when a JPEG has no SOF marker at all', () => {

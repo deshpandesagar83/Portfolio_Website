@@ -15,14 +15,17 @@ const STANDALONE_MARKERS = new Set([
 
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
+/** The first four bytes shared by both "GIF87a" and "GIF89a" headers. */
+const GIF_SIGNATURE = Buffer.from('GIF8');
+
 /** The APP1 EXIF segment header: the bytes "Exif" followed by two NULs. */
 const EXIF_MARKER = Buffer.from([0x45, 0x78, 0x69, 0x66, 0x00, 0x00]);
 
 /**
  * The intrinsic pixel dimensions of an image file, read from its header.
  *
- * Covers the formats this site uses: SVG, PNG, JPEG. Throws — rather than
- * guessing or returning zeroes — on anything it cannot read, so a test
+ * Covers the formats this site uses: SVG, PNG, JPEG, GIF. Throws — rather
+ * than guessing or returning zeroes — on anything it cannot read, so a test
  * asserting against it fails loudly instead of passing vacuously.
  */
 export function readImageDimensions(filePath: string): Dimensions {
@@ -30,11 +33,12 @@ export function readImageDimensions(filePath: string): Dimensions {
 
   if (buffer.subarray(0, 8).equals(PNG_SIGNATURE)) return readPng(buffer);
   if (buffer[0] === 0xff && buffer[1] === 0xd8) return readJpeg(buffer, filePath);
+  if (buffer.subarray(0, 4).equals(GIF_SIGNATURE)) return readGif(buffer, filePath);
   if (looksLikeSvg(buffer)) return readSvg(buffer, filePath);
 
   throw new Error(
     `${filePath}: unrecognized image format. readImageDimensions supports ` +
-      `SVG, PNG, and JPEG — add a reader here if the site starts using another.`,
+      `SVG, PNG, JPEG, and GIF — add a reader here if the site starts using another.`,
   );
 }
 
@@ -42,6 +46,16 @@ function readPng(buffer: Buffer): Dimensions {
   // IHDR is always the first chunk: 8-byte signature, 4-byte length,
   // 4-byte type, then width and height as big-endian uint32.
   return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
+}
+
+function readGif(buffer: Buffer, filePath: string): Dimensions {
+  // Logical screen descriptor: width and height are little-endian uint16 at
+  // bytes 6 and 8, right after the 6-byte "GIF87a"/"GIF89a" signature.
+  if (buffer.length < 10) {
+    throw new Error(`${filePath}: truncated GIF — no logical screen descriptor.`);
+  }
+
+  return { width: buffer.readUInt16LE(6), height: buffer.readUInt16LE(8) };
 }
 
 function readJpeg(buffer: Buffer, filePath: string): Dimensions {

@@ -19,6 +19,14 @@ describe('workflowContent', () => {
     expect(new Set(slugs).size, 'two projects share a slug, so one anchor is unreachable').toBe(
       slugs.length,
     );
+
+    for (const slug of slugs) {
+      expect(
+        slug,
+        `project slug "${slug}" collides with the id of the page's own <Section id="workflow"> ` +
+          `in app/workflow/page.tsx — /workflow/#workflow would resolve to the section, not the panel`,
+      ).not.toBe('workflow');
+    }
   });
 
   it('gives every project a name and at least one block', () => {

@@ -63,32 +63,36 @@ To go live:
    `ICON_PATHS` in `components/layout/Socials.tsx`, keyed by the same
    `platform` string. The content test in `content/site.test.ts` fails until
    you do.
-6. Run `npm test` — content invariants (unique menu ids, portrait ratios,
-   https socials, `meta.title` containing the identity name, every social
-   platform having an icon) are asserted, and the dead-anchor guard in
-   `app/page.test.tsx` fails if a menu item points at a missing section.
+6. Run `npm test` — content invariants (unique menu hrefs and labels, portrait
+   photo ratios, https socials, `meta.title` containing the identity name,
+   every social platform having an icon) are asserted in `content/site.test.ts`,
+   which also maps every menu entry to a page file under `app/` and fails if
+   one points at a route that doesn't exist.
 
-   Every `ImageRef` is also checked against the file on disk: the `src` must
-   resolve to a file under `public/`, and the declared `width`/`height` must
-   equal the file's real pixel dimensions. The failure message reports the real
-   numbers, so you can drop an image in with any placeholder values and let the
-   test tell you what to write. A JPEG carrying an EXIF orientation that rotates
-   it is rejected outright — browsers honour the tag, so its stored dimensions
-   are not the ones the layout needs; re-save it upright.
+   `content/images.test.ts` checks every `ImageRef` against the file on disk:
+   the `src` must resolve to a file under `public/`, and the declared
+   `width`/`height` must equal the file's real pixel dimensions. The failure
+   message reports the real numbers, so you can drop an image in with any
+   placeholder values and let the test tell you what to write. A JPEG carrying
+   an EXIF orientation that rotates it is rejected outright — browsers honour
+   the tag, so its stored dimensions are not the ones the layout needs;
+   re-save it upright.
 
-   The reader behind this lives in `test/imageDimensions.ts` (SVG, PNG, JPEG)
-   and has its own tests. Using another format means adding a branch there —
-   it throws rather than passing silently on anything it does not recognize.
+   The reader behind this lives in `test/imageDimensions.ts` (SVG, PNG, JPEG,
+   GIF) and has its own tests. Using another format means adding a branch
+   there — it throws rather than passing silently on anything it does not
+   recognize.
 
 ### Adding a project to the Workflow page
 
 1. Create `content/projects/<name>.ts` exporting a `WorkflowProject`. Copy
    `portfoliowebsite.ts` as the template.
 2. Import it in `content/projects/index.ts` and append it to `projects`.
-3. Drop the diagram or gif into `public/images/`. **It must be landscape**, and
+3. Drop the diagram or GIF into `public/images/`. **It must be landscape**, and
    the declared `width`/`height` must match the file — `content/images.test.ts`
-   reads the real header and fails if they disagree. GIFs need no config;
-   `images.unoptimized` is already set, so the file is served byte-for-byte.
+   reads the real header and fails if they disagree. SVG, PNG, JPEG, and GIF
+   all need no config; `images.unoptimized` is already set, so the file is
+   served byte-for-byte.
 4. Body blocks are `{ kind: 'para' | 'steps' | 'note' }`. Adding a new kind
    means adding its renderer in `components/ui/WorkflowBody.tsx` — the
    exhaustiveness check fails `tsc` until you do.
