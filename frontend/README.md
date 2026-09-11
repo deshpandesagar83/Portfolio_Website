@@ -64,6 +64,18 @@ To go live:
    platform having an icon) are asserted, and the dead-anchor guard in
    `app/page.test.tsx` fails if a menu item points at a missing section.
 
+   Every `ImageRef` is also checked against the file on disk: the `src` must
+   resolve to a file under `public/`, and the declared `width`/`height` must
+   equal the file's real pixel dimensions. The failure message reports the real
+   numbers, so you can drop an image in with any placeholder values and let the
+   test tell you what to write. A JPEG carrying an EXIF orientation that rotates
+   it is rejected outright — browsers honour the tag, so its stored dimensions
+   are not the ones the layout needs; re-save it upright.
+
+   The reader behind this lives in `test/imageDimensions.ts` (SVG, PNG, JPEG)
+   and has its own tests. Using another format means adding a branch there —
+   it throws rather than passing silently on anything it does not recognize.
+
 **Before any real deploy**, change `meta.siteUrl` in `content/site.ts` away
 from its placeholder `https://example.com` — that value is published into the
 JSON-LD, `og:url`, `robots.txt`, and `sitemap.xml`.
