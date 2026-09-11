@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import nodeConsole from 'node:console';
 import { siteContent } from '@/content/site';
 import { Menu } from './Menu';
 
@@ -55,11 +56,20 @@ describe('Menu', () => {
 
   it('calls onNavigate when a link is followed', async () => {
     // This is what closes the mobile menu.
+    // Clicking a real <a> outside a Next.js router context makes jsdom emit
+    // "Not implemented: navigation to another Document". jsdom's internal
+    // VirtualConsole forwards that to the raw node:console singleton, not
+    // the `console` global Vitest exposes to this file, so the spy has to
+    // target node:console directly to actually silence it. Silenced here
+    // because it's expected noise, not asserted on because pinning the
+    // exact wording would couple the test to jsdom internals.
+    const consoleErrorSpy = vi.spyOn(nodeConsole, 'error').mockImplementation(() => {});
     const user = userEvent.setup();
     const onNavigate = vi.fn();
     render(<Menu activePath="/" onNavigate={onNavigate} />);
 
     await user.click(screen.getByRole('link', { name: 'Workflow' }));
+    consoleErrorSpy.mockRestore();
 
     expect(onNavigate).toHaveBeenCalledTimes(1);
   });

@@ -10,7 +10,7 @@ export default function NotFound() {
           This page does not exist
         </h1>
         <p className="mt-4 text-muted">
-          The link may be out of date. Everything lives on one page.
+          The link may be out of date.
         </p>
         <Link
           href="/"

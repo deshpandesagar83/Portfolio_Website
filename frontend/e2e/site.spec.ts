@@ -42,19 +42,60 @@ test.describe('portfolio site, served from the static export', () => {
   });
 });
 
+test.describe('the workflow page', () => {
+  test('loads with no console errors', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+    page.on('pageerror', (error) => errors.push(error.message));
+
+    await page.goto('/workflow/');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+    expect(errors).toEqual([]);
+  });
+
+  test('opens the first panel and collapses it on click', async ({ page }) => {
+    // The disclosure is native <details>: this proves it works in the exported
+    // bundle with none of our JavaScript.
+    await page.goto('/workflow/');
+
+    const panel = page.locator('details').first();
+    await expect(panel).toHaveAttribute('open', '');
+
+    await panel.locator('summary').click();
+    await expect(panel).not.toHaveAttribute('open', '');
+  });
+});
+
 test.describe('desktop navigation', () => {
   test.skip(({ isMobile }) => !!isMobile, 'desktop menu is hidden on mobile');
 
-  test('scrolls to a section and marks its menu item current', async ({ page }) => {
+  test('navigates between the two pages and marks the current one', async ({ page }) => {
     await page.goto('/');
 
-    const nav = page.getByRole('navigation', { name: 'Section navigation' });
-    await nav.getByRole('link', { name: 'Comments' }).click();
-
-    await expect(page.locator('#comments')).toBeInViewport();
-    await expect(nav.getByRole('link', { name: 'Comments' })).toHaveAttribute(
+    const nav = page.getByRole('navigation', { name: 'Primary navigation' });
+    await expect(nav.getByRole('link', { name: 'Home' })).toHaveAttribute(
       'aria-current',
-      'true',
+      'page',
+    );
+
+    await nav.getByRole('link', { name: 'Workflow' }).click();
+
+    await expect(page).toHaveURL(/\/workflow\/?$/);
+    await expect(page.locator('#workflow')).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Workflow' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+
+    await nav.getByRole('link', { name: 'Home' }).click();
+
+    await expect(page.locator('#hero')).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Home' })).toHaveAttribute(
+      'aria-current',
+      'page',
     );
   });
 });
@@ -62,21 +103,20 @@ test.describe('desktop navigation', () => {
 test.describe('mobile navigation', () => {
   test.skip(({ isMobile }) => !isMobile, 'toggle only exists on mobile');
 
-  test('opens the menu, navigates, and closes it', async ({ page }) => {
+  test('opens the menu, navigates to Workflow, and closes', async ({ page }) => {
     await page.goto('/');
 
     const toggle = page.getByRole('button', { name: 'Open menu' });
     await expect(toggle).toBeVisible();
     await toggle.click();
 
-    const mobileNav = page.getByRole('navigation', {
-      name: 'Mobile section navigation',
-    });
+    const mobileNav = page.getByRole('navigation', { name: 'Mobile navigation' });
     await expect(mobileNav).toBeVisible();
 
-    await mobileNav.getByRole('link', { name: 'Comments' }).click();
+    await mobileNav.getByRole('link', { name: 'Workflow' }).click();
 
-    await expect(page.locator('#comments')).toBeInViewport();
+    await expect(page).toHaveURL(/\/workflow\/?$/);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(mobileNav).toHaveCount(0);
   });
 });

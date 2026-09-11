@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import nodeConsole from 'node:console';
 import { siteContent } from '@/content/site';
 import { Header } from './Header';
 
@@ -111,11 +112,38 @@ describe('Header', () => {
     await user.click(screen.getByRole('button', { name: 'Open menu' }));
 
     const mobileNav = screen.getByRole('navigation', { name: 'Mobile navigation' });
+
+    // Clicking a real <a> outside a Next.js router context makes jsdom emit
+    // "Not implemented: navigation to another Document". jsdom's internal
+    // VirtualConsole forwards that to the raw node:console singleton, not
+    // the `console` global Vitest exposes to this file, so the spy has to
+    // target node:console directly to actually silence it. Silenced here
+    // because it's expected noise, not asserted on because pinning the
+    // exact wording would couple the test to jsdom internals.
+    const consoleErrorSpy = vi.spyOn(nodeConsole, 'error').mockImplementation(() => {});
     await user.click(within(mobileNav).getByRole('link', { name: 'Workflow' }));
+    consoleErrorSpy.mockRestore();
 
     expect(screen.getByRole('button', { name: 'Open menu' })).toHaveAttribute(
       'aria-expanded',
       'false',
+    );
+  });
+
+  it('marks the current page inside the mobile nav too', async () => {
+    pathnameRef.current = '/workflow/';
+    const user = userEvent.setup();
+    render(<Header />);
+
+    await user.click(screen.getByRole('button', { name: 'Open menu' }));
+
+    const mobileNav = screen.getByRole('navigation', { name: 'Mobile navigation' });
+    expect(within(mobileNav).getByRole('link', { name: 'Workflow' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(within(mobileNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute(
+      'aria-current',
     );
   });
 });
