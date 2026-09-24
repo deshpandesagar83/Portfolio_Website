@@ -18,7 +18,7 @@ export function CommentsPlaceholder() {
         />
 
         <div>
-          <h2 className="font-display text-3xl tracking-tight md:text-4xl">
+          <h2 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">
             {comments.heading}
           </h2>
 

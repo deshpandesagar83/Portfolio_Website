@@ -28,7 +28,7 @@ export default function Workflow() {
       <Header />
       <main>
         <Section id="workflow" className="py-20 md:py-24">
-          <h1 className="font-display text-4xl leading-tight tracking-tight md:text-5xl">
+          <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
             {workflowContent.heading}
           </h1>
 

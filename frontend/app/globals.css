@@ -1,19 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  /* Dark-first palette. Chosen for the register of the source diagrams.
-     Contrast against --color-ink: text 16.1:1, muted 5.8:1, accent 8.2:1. */
-  --color-ink: #0b0b0d;
-  --color-surface: #141417;
-  --color-line: #3a3a44;
-  --color-muted: #8a8a94;
-  --color-text: #e8e8ea;
-  --color-accent: #c8a24a;
+  /*Contrast against --color-ink: text 17.0:1, muted 5.5:1. */
+  --color-ink: #101011;
+  --color-surface: #191919;
+  --color-line: #3a3a3c;
+  --color-muted: #8a8a8a;
+  --color-text: #f2f2f2;
+  --color-accent: #f2f2f2;
 
-  /* Editorial serif for display, neutral sans for everything else.
-     Deliberately not the create-next-app default. */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-shantell-sans), ui-rounded, 'Comic Sans MS', cursive;
+  --font-display: var(--font-shantell-sans), ui-rounded, 'Comic Sans MS', cursive;
 }
 
 html {

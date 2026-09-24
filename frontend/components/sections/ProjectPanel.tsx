@@ -23,7 +23,7 @@ export function ProjectPanel({ project, isFirst = false }: ProjectPanelProps) {
       className="group scroll-mt-24 border-b border-line py-8"
     >
       <summary className="flex cursor-pointer list-none items-center justify-between gap-6 [&::-webkit-details-marker]:hidden">
-        <h2 className="font-display text-2xl tracking-tight md:text-3xl">{project.name}</h2>
+        <h2 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">{project.name}</h2>
 
         {/* Decorative: the summary already announces its own state. */}
         <svg

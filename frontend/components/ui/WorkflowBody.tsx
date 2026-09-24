@@ -31,7 +31,7 @@ export function WorkflowBody({ blocks, className = '' }: WorkflowBodyProps) {
             return (
               <ol
                 key={key}
-                className="ml-5 max-w-prose list-decimal space-y-2 leading-relaxed marker:text-accent"
+                className="ml-5 max-w-prose list-decimal space-y-2 leading-relaxed marker:text-muted"
               >
                 {block.items.map((item, itemIndex) => (
                   <li key={`${key}-${itemIndex}`}>{item}</li>

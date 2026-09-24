@@ -1,17 +1,11 @@
 import type { Metadata } from 'next';
-import { Fraunces, Inter } from 'next/font/google';
+import { Shantell_Sans } from 'next/font/google';
 import { siteContent } from '@/content/site';
 import './globals.css';
 
-const inter = Inter({
+const shantellSans = Shantell_Sans({
   subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-fraunces',
+  variable: '--font-shantell-sans',
   display: 'swap',
 });
 
@@ -45,7 +39,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+    <html lang="en" className={shantellSans.variable}>
       <body className="font-sans">
         {children}
         <script

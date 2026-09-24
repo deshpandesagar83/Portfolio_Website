@@ -22,7 +22,7 @@ export function Hero() {
         />
 
         <div>
-          <h1 className="font-display text-4xl leading-tight tracking-tight md:text-6xl">
+          <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
             {identity.name}
           </h1>
           <p className="mt-4 text-lg text-muted md:text-xl">{identity.tagline}</p>

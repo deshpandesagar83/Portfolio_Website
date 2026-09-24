@@ -15,7 +15,7 @@ export function Logo() {
         priority
         className="h-9 w-9"
       />
-      <span className="font-display text-lg tracking-tight">{name}</span>
+      <span className="font-display text-lg font-semibold tracking-tight">{name}</span>
     </Link>
   );
 }
