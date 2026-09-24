@@ -12,6 +12,13 @@ Learn:
 * Terraform
 * GenAI
 
+## Build status
+
+Version 1 (Inactive) frontend lives in [`frontend/`](./frontend) — a static
+Next.js site that builds to `out/` for S3 hosting. See
+[`frontend/README.md`](./frontend/README.md) to run it, and
+[the design spec](./docs/superpowers/specs/2026-09-10-portfolio-frontend-v1-design.md)
+for what it does and does not cover. AWS infrastructure is not built yet.
 
 ## Functionalities
 ### Version - 1 (Inactive)

@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  /*Contrast against --color-ink: text 17.0:1, muted 5.5:1. */
+  --color-ink: #101011;
+  --color-surface: #191919;
+  --color-line: #3a3a3c;
+  --color-muted: #8a8a8a;
+  --color-text: #f2f2f2;
+  --color-accent: #f2f2f2;
+
+  --font-sans: var(--font-shantell-sans), ui-rounded, 'Comic Sans MS', cursive;
+  --font-display: var(--font-shantell-sans), ui-rounded, 'Comic Sans MS', cursive;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-ink);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Focus is always visible, and always on the accent. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
