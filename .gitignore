@@ -1,5 +1,5 @@
 planning/*
-.agents
-.claude
+.agents/skills
+.claude/skills
 skills-lock.json
 .superpowers
