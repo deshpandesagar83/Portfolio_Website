@@ -9,7 +9,7 @@ export function Footer() {
               frozen into the static export until the next rebuild. */}
           © {new Date().getFullYear()} {siteContent.identity.name}
         </p>
-        <p>{siteContent.identity.tagline}</p>
+        {/* <p>{siteContent.identity.tagline}</p> */}
       </div>
     </footer>
   );
