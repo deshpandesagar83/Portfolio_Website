@@ -1,0 +1,22 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [infra]   # change to master and delete the `infra` branch
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: false   # never interrupt a half-finished S3 sync
+
+permissions:
+  contents: read
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Say hello
+        run: |
+          echo "This is a test. Everything is working as expected."
