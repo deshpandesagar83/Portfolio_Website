@@ -1,8 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Static portfolio hosting - private S3 bucket behind CloudFront on the apex domain.
 
-# Deploy in us-east-1: CloudFront only accepts ACM certificates from that region.
-
 Parameters:
   DomainName:
     Type: String
