@@ -1,0 +1,35 @@
+{
+  "enabledPlugins": {
+    "code-simplifier@claude-plugins-official": true
+  },
+
+  "permissions": {
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Read(./.env)",
+      "Write(./.env)",
+      "Edit(./.env)",
+      "Read(./secrets/**)",
+      "Write(./secrets/**)",
+      "Edit(./secrets/**)",
+      "Read(./plan/**)",
+      "Write(./plan/**)",
+      "Edit(./plan/**)",
+      "WebFetch"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(npm publish:*)",
+      "Read(./frontend/**)",
+      "Read(./backend/**)",
+      "Read(./infra/**)",
+      "Write(./infra/**)",
+      "Edit(./infra/**)",
+      "Read(./planning/**)",
+      "Write(./planning/**)",
+      "Edit(./planning/**)",
+      "Edit(./package.json)"
+    ]
+  }
+}
