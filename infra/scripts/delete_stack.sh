@@ -2,11 +2,12 @@
 
 # This script deletes the old stack
 # The templatle will retain resources so stack can safely be deleted
+# Usage: sh infra/scripts/delete_stack.sh <stack-name>
 # Default region is configured using aws configure and is set to ca-central-1
 
 set -u
 
-STACK="${1:-portfolio-stack}"
+STACK="${1:?usage: delete_stack.sh <stack-name>}"
 STACK_ID=$(aws cloudformation describe-stacks --stack-name "$STACK" --query "Stacks[0].StackId" --output text 2>/dev/null)
 if [ -n "$STACK_ID" ]; then
     echo "Deleting $STACK ..."

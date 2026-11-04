@@ -1,12 +1,18 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Create a private S3 bucket behind CloudFront.
 
+Parameters:
+  BucketName:
+    Type: String
+    Description: Name of the website bucket.
+
 Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
+      BucketName: !Ref BucketName
       VersioningConfiguration:
         Status: Enabled
       PublicAccessBlockConfiguration:
@@ -20,4 +26,3 @@ Resources:
             Status: Enabled
             NoncurrentVersionExpiration:
               NoncurrentDays: 30
-
