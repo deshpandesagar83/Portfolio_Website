@@ -13,6 +13,10 @@ Resources:
     UpdateReplacePolicy: Retain
     Properties:
       BucketName: !Ref BucketName
+      # CloudFront legacy logging writes into this bucket and needs ACLs enabled.
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
       VersioningConfiguration:
         Status: Enabled
       PublicAccessBlockConfiguration:
@@ -26,3 +30,7 @@ Resources:
             Status: Enabled
             NoncurrentVersionExpiration:
               NoncurrentDays: 30
+          - Id: ExpireCloudFrontLogs
+            Status: Enabled
+            Prefix: cloudfront_logs/
+            ExpirationInDays: 90
