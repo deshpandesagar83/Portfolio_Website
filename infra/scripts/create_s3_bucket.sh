@@ -7,7 +7,7 @@
 set -u
 cd "$(dirname "$0")/../.." || exit 1
 
-TEMPLATE=infra/cloudformation/cloudformation_s3.yaml
+TEMPLATE=infra/cloudformation/s3.yaml
 
 if [ ! -f "$TEMPLATE" ]; then
   echo "Template not found: $TEMPLATE"
