@@ -20,9 +20,9 @@ if [ -z "$BUCKET" ]; then
   exit 1
 fi
 
-STACK=$(grep '^STACK_NAME=' .env 2>/dev/null | cut -d= -f2- | tr -d '\r"'"'")
+STACK=$(grep '^S3_STACK_NAME=' .env 2>/dev/null | cut -d= -f2- | tr -d '\r"'"'")
 if [ -z "$STACK" ]; then
-  echo "STACK_NAME is not set in .env"
+  echo "S3_STACK_NAME is not set in .env"
   exit 1
 fi
 
