@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Static portfolio hosting - private S3 bucket behind CloudFront on the apex domain.
+Description: Create a private S3 bucket behind CloudFront.
 
 Resources:
   WebsiteBucket:
