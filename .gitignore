@@ -3,3 +3,6 @@ planning/*
 .claude/skills
 skills-lock.json
 .superpowers
+.claude/settings.local.json
+*copy*
+.env

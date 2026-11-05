@@ -1,0 +1,135 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Static portfolio hosting - private S3 bucket behind CloudFront on the apex domain.
+
+Parameters:
+  WebsiteBucketName:
+    Type: String
+    Description: The S3 bucket which holds the website build 
+  Certificate:
+    Type: String
+    Description: The ACM Certificate ARN
+  DomainName:
+    Type: String
+    Description: Apex domain served by the site, e.g. example.com
+
+Resources:
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${AWS::StackName}-oac'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # Short TTLs while testing. Raise DefaultTTL/MaxTTL (e.g. 86400 / 31536000) for production.
+  WebsiteCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Sub '${AWS::StackName}-cache'
+        # If your minimum TTL is greater than 0, 
+        # CloudFront will cache content for at least the duration specified in the cache policy's minimum TTL, 
+        # even if the Cache-Control: no-cache, no-store, or private directives are present in the origin headers.
+        MinTTL: 0
+        DefaultTTL: 60
+        MaxTTL: 300
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+          CookiesConfig:
+            CookieBehavior: none
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+
+  WebsiteDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref DomainName
+        Comment: "Static Website hosting"
+        # A private bucket returns 403 (not 404) for missing keys.
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+            ErrorCachingMinTTL: 10
+          - ErrorCode: 404
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+            ErrorCachingMinTTL: 10
+
+        DefaultCacheBehavior:
+          AllowedMethods: [GET, HEAD]
+          CachePolicyId: !Ref WebsiteCachePolicy
+          Compress: true
+          # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html#managed-response-headers-policies-security
+          ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03
+          TargetOriginId: website-bucket-origin
+          ViewerProtocolPolicy: redirect-to-https
+
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2and3
+        IPV6Enabled: true
+
+        # Legacy standard logging, written into the website bucket under cloudfront_logs/.
+        Logging:
+          Bucket: !Sub '${WebsiteBucketName}.s3.amazonaws.com'
+          IncludeCookies: false
+          Prefix: cloudfront_logs/
+
+        Origins:
+          - ConnectionAttempts: 1
+            ConnectionTimeout: 5
+            DomainName: !Sub '${WebsiteBucketName}.s3.${AWS::Region}.amazonaws.com'
+            Id: website-bucket-origin
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            # Not needed for now
+            # ResponseCompletionTimeout: 
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+              # OriginReadTimeout:
+
+        # https://aws.amazon.com/cloudfront/pricing/pay-as-you-go/
+        PriceClass: PriceClass_100
+        # No need to set restriction for now
+        # Restrictions:
+        #   GeoRestriction:
+        #     RestrictionType: whitelist
+        #     Locations: [CA, US]
+        ViewerCertificate:
+          AcmCertificateArn: !Ref Certificate
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
+
+  # If more policies are needed in the future move this to its own stack      
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucketName
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal: {Service: cloudfront.amazonaws.com}
+            Action: s3:GetObject
+            Resource: !Sub 'arn:aws:s3:::${WebsiteBucketName}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteDistribution}'
+          - Sid: DenyCloudFrontReadLogs
+            Effect: Deny
+            Principal: {Service: cloudfront.amazonaws.com}
+            Action: s3:GetObject
+            Resource: !Sub 'arn:aws:s3:::${WebsiteBucketName}/cloudfront_logs/*'
+
+Outputs:
+  DistributionDomainName:
+    Description: Target for the Route53 A and AAAA alias records
+    Value: !GetAtt WebsiteDistribution.DomainName
+        
