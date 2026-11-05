@@ -3,6 +3,7 @@
 # Deploys cloudfront.yaml, then prints the distribution domain name for the Route53 records.
 # Reads these values from .env at the repo root: CLOUDFRONT_STACK_NAME, BUCKET_NAME, CERTIFICATE_ARN (us-east-1), DOMAIN_NAME
 # The website bucket must already exist (see create_s3_bucket.sh).
+# Also passes infra/functions/url-rewrite.js to the template as the CloudFront Function body.
 # Default region is configured using aws configure and is set to ca-central-1
 
 set -u
@@ -46,7 +47,18 @@ if ! aws s3api head-bucket --bucket "$BUCKET" > /dev/null 2>&1; then
   exit 1
 fi
 
-sh infra/scripts/deploy_stack.sh "$STACK" "$TEMPLATE" WebsiteBucketName="$BUCKET" Certificate="$CERT" DomainName="$DOMAIN" || exit 1
+REWRITE_FUNCTION=infra/functions/url-rewrite.js
+if [ ! -f "$REWRITE_FUNCTION" ]; then
+  echo "Function file not found: $REWRITE_FUNCTION"
+  exit 1
+fi
+REWRITE_FUNCTION=$(tr -d '\r' < "$REWRITE_FUNCTION")
+
+sh infra/scripts/deploy_stack.sh "$STACK" "$TEMPLATE" \
+  WebsiteBucketName="$BUCKET" \
+  Certificate="$CERT" \
+  DomainName="$DOMAIN" \
+  UrlRewriteFunction="$REWRITE_FUNCTION" || exit 1
 
 # Show what the Route53 records should point to.
 echo "Distribution Domain:"
