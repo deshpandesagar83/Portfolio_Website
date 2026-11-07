@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { siteContent } from '@/content/site';
 
 export function Footer() {
@@ -10,6 +11,11 @@ export function Footer() {
           © {new Date().getFullYear()} {siteContent.identity.name}
         </p>
         {/* <p>{siteContent.identity.tagline}</p> */}
+        <p>
+          <Link href="/privacy/" className="underline underline-offset-2 hover:text-text">
+            Privacy
+          </Link>
+        </p>
       </div>
     </footer>
   );
