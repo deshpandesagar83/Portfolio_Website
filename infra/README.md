@@ -6,7 +6,7 @@
 - A Route53 hosted zone for the domain.
 
 **Note:**
-This project uses the default region is `ca-central-1`.
+This project uses the default region `ca-central-1`.
 
 
 # File Details
