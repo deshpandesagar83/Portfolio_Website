@@ -6,3 +6,4 @@ skills-lock.json
 .claude/settings.local.json
 *copy*
 .env
+*__pycache__*
