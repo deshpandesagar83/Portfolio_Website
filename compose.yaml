@@ -1,0 +1,8 @@
+# Entry point for every local container. Each part of the project keeps its own compose file under infra/docker/; this file pulls them in.
+# Run from the repo root or any folder inside it: docker compose up
+
+name: website
+
+include:
+  - path: infra/docker/frontend/compose.dev.yaml
+    project_directory: .

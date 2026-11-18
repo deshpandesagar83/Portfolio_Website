@@ -1,0 +1,27 @@
+# Frontend local development. Loaded by the root compose.yaml, which sets the
+# project directory to the repo root, so every path here is relative to the
+# repo root, not to this file. Run from anywhere inside the repo:
+#   docker compose up
+#   docker compose run --rm app npm <command>
+
+services:
+  app:
+    profiles: [frontend-dev]
+    build:
+      context: .
+      dockerfile: infra/docker/frontend/dev.Dockerfile
+    image: website-frontend-dev
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      # Container paths must match WORKDIR in dev.Dockerfile.
+      - ./frontend:/home/node/app
+      - node_modules:/home/node/app/node_modules
+      - next_cache:/home/node/app/.next
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  node_modules:
+  next_cache:
