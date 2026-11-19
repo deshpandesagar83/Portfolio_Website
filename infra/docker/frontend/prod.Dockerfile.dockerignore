@@ -1,0 +1,16 @@
+# Paths are relative to the build context (repo root).
+# Allow-list: ignore everything, then let in frontend/ and the nginx config.
+*
+!frontend/
+!infra/docker/frontend/nginx.conf
+
+# Local output, Windows-built dependencies and secrets inside frontend/
+frontend/node_modules
+frontend/.next
+frontend/out
+frontend/test-results
+frontend/playwright-report
+frontend/blob-report
+frontend/coverage
+frontend/**/*.tsbuildinfo
+frontend/.env*
