@@ -1,4 +1,4 @@
-# Portfolio Websit
+# Portfolio Website
 
 ## Goal
 Display Skills:
