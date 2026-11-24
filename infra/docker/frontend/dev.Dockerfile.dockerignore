@@ -1,0 +1,3 @@
+# The dev image copies nothing from the build context; source arrives through
+# the compose bind mount. Ignore everything so the build sends no files.
+*
