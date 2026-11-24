@@ -1,39 +1,45 @@
 import type { WorkflowProject } from '../types';
 
 // ---------------------------------------------------------------------------
-// TODO: replace before launch. Everything below is placeholder content.
-// Required from Sagar:
-//   1. The real diagram or gif in public/images/. It must be LANDSCAPE, and
-//      image.width/height must match the file exactly — content/images.test.ts
-//      reads the file header and fails if they disagree.
-//   2. The step copy — the real pipeline, in order.
-//   3. The summary paragraph and the closing note.
+// TODO: The image dimensions are set to the exact values. Update so they are generic.
+// (Might need to remake those images from drawio to fit the desired dimentions 1920x1080)
+// The work looks text heavy. Research with UI/UX perspective to come up with a better way of displaying the workflow.  
 // ---------------------------------------------------------------------------
 export const portfoliowebsite: WorkflowProject = {
   slug: 'portfoliowebsite',
   name: 'Portfolio Website',
   image: {
-    src: '/images/placeholder-workflow.svg',
-    alt: 'Placeholder workflow diagram',
-    width: 1600,
-    height: 900,
+    src: '/images/Workflow-Inactive.jpg',
+    alt: 'Simple Workflow',
+    width: 861,
+    height: 1111,
   },
   body: [
     {
       kind: 'para',
-      text: 'Placeholder summary. One or two sentences on what this project is and why it exists.',
+      text: 'Personal Website Project',
     },
     {
       kind: 'steps',
       items: [
-        'Placeholder step one — replace with the first stage of the real workflow.',
-        'Placeholder step two — replace with the second stage.',
-        'Placeholder step three — replace with the third stage.',
+        'Research a range of portfolio websites.',
+        'Identify common patterns: portfolios typically include a home page with a personal photo and short introduction, a projects page, and social links.',
+        'Research technologies suitable for building a basic website.',
+        'Compare technologies on ease of use, build cost, performance optimization, and ability to scale to zero, factoring in my familiarity with each.',
+        'Host the site on AWS, given my existing expertise with the platform.',
+        'Budget: $16 USD per year for the domain. S3 storage costs are negligible, and CloudFront usage falls within the free tier (1M requests, 100 GB data transfer, 5 GB S3 storage).',
+        'Set up AWS Budgets to monitor costs.',
+        'Phase 1: Static hosting with Route 53, S3, and CloudFront. Phase 2: Add a database and backend layer.',
+        'Have Claude generate an initial build. The design is unsatisfactory, provide additional context. A wireframe of the desired layout.',
+        'Add relevant frontend design skills to Claude. The design can be refined later; the priority is to get a working version live first.',
+        'Secure the domain using Route 53.',
+        'Use CloudFormation to provision the S3 and CloudFront resources.',
+        'Set up a GitHub Actions workflow for CI/CD.',
       ],
     },
     {
       kind: 'note',
-      text: 'Placeholder note. Use this for a caveat, a constraint, or what is deliberately out of scope.',
+      text: 'AWS Cost Anomaly Detection does not trigger alerts until it has enough historical data to establish a baseline of normal spending. AWS has recently introduced hard spending caps for budgets.',
     },
   ],
 };

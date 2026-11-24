@@ -25,8 +25,8 @@ const PLACEHOLDER_PORTRAIT = {
 
 export const siteContent: SiteContent = {
   identity: {
-    name: 'PlaceHolder Name',
-    tagline: 'PlaceHolder Tagline',
+    name: 'Sagar Deshpande',
+    tagline: 'Pragmatic. Meticulous. Curious.',
     logo: {
       src: '/images/placeholder-logo.svg',
       alt: 'Placeholder personal logo',
@@ -36,9 +36,9 @@ export const siteContent: SiteContent = {
   },
 
   meta: {
-    title: 'PlaceHolder Name',
+    title: 'Sagar Deshpande',
     description:
-      'Portfolio placeholder. Replace this description with a real one before launch.',
+      '',
     siteUrl: 'https://example.com',
   },
 
@@ -48,15 +48,15 @@ export const siteContent: SiteContent = {
   ],
 
   socials: [
-    { platform: 'github', label: 'PlaceHolder GitHub profile', href: 'https://github.com' },
-    { platform: 'linkedin', label: 'PlaceHolder LinkedIn profile', href: 'https://www.linkedin.com' },
+    { platform: 'github', label: 'GitHub profile', href: 'https://github.com/deshpandesagar83' },
+    { platform: 'linkedin', label: 'LinkedIn profile', href: 'https://www.linkedin.com/in/sagar-deshpande-b0813b81/' },
   ],
 
   hero: {
-    photo: { src: '/images/placeholder-portrait.svg', alt: 'Name', width: 900, height: 1200 },
+    photo: { src: '/images/sagar_image.jpg', alt: 'Sagar Image', width: 1544, height: 1600 },
     body: [
-      'Placeholder brief. Two or three short paragraphs introducing who you are, what you build, and what you are looking for.',
-      'Placeholder second paragraph. Replace this with something concrete — a system you designed, a problem you solved, a result you can point at.',
+      'An engineer who learns from every source: books, the internet, AI. Any tool, any era.',
+      'Understand → Research → Iterate'
     ],
   },
 
