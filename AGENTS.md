@@ -1,4 +1,5 @@
 Always ask before reading any files outside of the current folder.
+Always confirm before applying any changes. Tell me what changes you are going to make and why.
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 
