@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: WAF web ACL for the site distribution. Deploy in us-east-1.
+
+# CLOUDFRONT-scope web ACLs exist only in us-east-1, so this stack lives there while the site stacks stay in ca-central-1.
+# Independent of the CloudFront stack: rules can be changed here without touching the distribution.
+# The ARN only changes if the web ACL is replaced (e.g. a Name change); then update WEB_ACL_ARN in .env and redeploy CloudFront.
+# Sized for the CloudFront flat-rate Free plan: max 5 rules, no WAF request logs (so no LoggingConfiguration),
+# no custom rule groups, no header or regex matching, no custom block responses.
+
+Parameters:
+  RateLimit:
+    Type: Number
+    Default: 1000
+    MinValue: 10
+    Description: Requests per IP per 5 minutes before that IP is blocked. A page load fetches many assets, and recruiters may share an office NAT, so keep it generous.
+
+Resources:
+  WebAcl:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: !Sub '${AWS::StackName}-acl'
+      Description: Site distribution protection
+      Scope: CLOUDFRONT
+      DefaultAction:
+        Allow: {}
+      # Metrics and sampled requests feed the CloudFront security dashboard.
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        SampledRequestsEnabled: true
+        MetricName: !Sub '${AWS::StackName}-acl'
+      # 4 of the 5 rules the Free plan allows; the last slot is kept for an /api/* rate limit when the chatbot ships.
+      Rules:
+        # Known malicious IPs, cheapest check first.
+        - Name: AmazonIpReputation
+          Priority: 0
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesAmazonIpReputationList
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            SampledRequestsEnabled: true
+            MetricName: AmazonIpReputation
+
+        - Name: RateLimitPerIp
+          Priority: 1
+          Action:
+            Block: {}
+          Statement:
+            RateBasedStatement:
+              Limit: !Ref RateLimit
+              EvaluationWindowSec: 300
+              AggregateKeyType: IP
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            SampledRequestsEnabled: true
+            MetricName: RateLimitPerIp
+
+        # Log4j, Java deserialization, localhost Host headers and similar exploit patterns.
+        - Name: KnownBadInputs
+          Priority: 2
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            SampledRequestsEnabled: true
+            MetricName: KnownBadInputs
+
+        # OWASP-style baseline. Count only until the dashboard shows no false positives, then change to None: {} to block.
+        - Name: CommonRuleSet
+          Priority: 3
+          OverrideAction:
+            Count: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesCommonRuleSet
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            SampledRequestsEnabled: true
+            MetricName: CommonRuleSet
+
+Outputs:
+  WebAclArn:
+    Description: Set as WEB_ACL_ARN in .env; create_cloudfront.sh passes it to cloudfront.yaml
+    Value: !GetAtt WebAcl.Arn

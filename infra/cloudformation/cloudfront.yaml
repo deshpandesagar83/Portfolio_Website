@@ -14,6 +14,10 @@ Parameters:
   UrlRewriteFunction:
     Type: String
     Description: Source of the viewer-request function, read from infra/functions/url-rewrite.js by create_cloudfront.sh (max 4096 bytes)
+  WebAclArn:
+    Type: String
+    AllowedPattern: '^arn:aws:wafv2:us-east-1:[0-9]{12}:global/webacl/.+$'
+    Description: CLOUDFRONT-scope web ACL ARN (us-east-1), WEB_ACL_ARN in .env. Created by the separate waf.yaml stack
 
 Resources:
   # Rewrites /workflow/ to /workflow/index.html; the S3 REST origin does not resolve directory indexes.
@@ -37,28 +41,6 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
-  # Short TTLs while testing. Raise DefaultTTL/MaxTTL (e.g. 86400 / 31536000) for production.
-  WebsiteCachePolicy:
-    Type: AWS::CloudFront::CachePolicy
-    Properties:
-      CachePolicyConfig:
-        Name: !Sub '${AWS::StackName}-cache'
-        # If your minimum TTL is greater than 0, 
-        # CloudFront will cache content for at least the duration specified in the cache policy's minimum TTL, 
-        # even if the Cache-Control: no-cache, no-store, or private directives are present in the origin headers.
-        MinTTL: 0
-        DefaultTTL: 60
-        MaxTTL: 300
-        ParametersInCacheKeyAndForwardedToOrigin:
-          EnableAcceptEncodingGzip: true
-          EnableAcceptEncodingBrotli: true
-          CookiesConfig:
-            CookieBehavior: none
-          HeadersConfig:
-            HeaderBehavior: none
-          QueryStringsConfig:
-            QueryStringBehavior: none
-
   WebsiteDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -79,7 +61,8 @@ Resources:
 
         DefaultCacheBehavior:
           AllowedMethods: [GET, HEAD]
-          CachePolicyId: !Ref WebsiteCachePolicy
+          # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
           Compress: true
           FunctionAssociations:
             - EventType: viewer-request
@@ -93,12 +76,7 @@ Resources:
         Enabled: true
         HttpVersion: http2and3
         IPV6Enabled: true
-
-        # Legacy standard logging, written into the website bucket under cloudfront_logs/.
-        Logging:
-          Bucket: !Sub '${WebsiteBucketName}.s3.amazonaws.com'
-          IncludeCookies: false
-          Prefix: cloudfront_logs/
+        WebACLId: !Ref WebAclArn
 
         Origins:
           - ConnectionAttempts: 1
@@ -142,6 +120,7 @@ Resources:
             Condition:
               StringEquals:
                 AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteDistribution}'
+          # Logging is off, but logs written before stay until the bucket lifecycle rule expires them.
           # Redundant now that reads are limited to frontend/; kept as a second guard.
           - Sid: DenyCloudFrontReadLogs
             Effect: Deny
@@ -153,4 +132,7 @@ Outputs:
   DistributionDomainName:
     Description: Target for the Route53 A and AAAA alias records
     Value: !GetAtt WebsiteDistribution.DomainName
+  DistributionId:
+    Description: Needed to subscribe the distribution to a CloudFront pricing plan
+    Value: !Ref WebsiteDistribution
         

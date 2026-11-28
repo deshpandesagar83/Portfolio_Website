@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Deploys cloudfront.yaml, then prints the distribution domain name for the Route53 records.
-# Reads these values from .env at the repo root: CLOUDFRONT_STACK_NAME, BUCKET_NAME, CERTIFICATE_ARN (us-east-1), DOMAIN_NAME
-# The website bucket must already exist (see create_s3_bucket.sh).
+# Reads these values from .env at the repo root: CLOUDFRONT_STACK_NAME, BUCKET_NAME, CERTIFICATE_ARN (us-east-1), DOMAIN_NAME, WEB_ACL_ARN (us-east-1)
+# The website bucket must already exist (see create_s3_bucket.sh), and so must the web ACL (see create_waf.sh).
 # Also passes infra/functions/url-rewrite.js to the template as the CloudFront Function body.
 # Default region is configured using aws configure and is set to ca-central-1
 
@@ -42,6 +42,15 @@ fi
 # CloudFront only accepts certificates from us-east-1.
 echo "$CERT" | grep -q '^arn:aws:acm:us-east-1:' || { echo "CERTIFICATE_ARN must be an ACM certificate in us-east-1"; exit 1; }
 
+WEB_ACL_ARN=$(grep '^WEB_ACL_ARN=' .env 2>/dev/null | cut -d= -f2- | tr -d '\r"'"'")
+if [ -z "$WEB_ACL_ARN" ]; then
+  echo "WEB_ACL_ARN is not set in .env (printed by create_waf.sh)"
+  exit 1
+fi
+
+# CloudFront only accepts CLOUDFRONT-scope web ACLs, which live in us-east-1.
+echo "$WEB_ACL_ARN" | grep -q '^arn:aws:wafv2:us-east-1:[0-9]*:global/webacl/' || { echo "WEB_ACL_ARN must be a CLOUDFRONT-scope (global) web ACL in us-east-1"; exit 1; }
+
 if ! aws s3api head-bucket --bucket "$BUCKET" > /dev/null 2>&1; then
   echo "Bucket $BUCKET not found or not accessible. Create it first with create_s3_bucket.sh."
   exit 1
@@ -58,7 +67,8 @@ sh infra/scripts/deploy_stack.sh "$STACK" "$TEMPLATE" \
   WebsiteBucketName="$BUCKET" \
   Certificate="$CERT" \
   DomainName="$DOMAIN" \
-  UrlRewriteFunction="$REWRITE_FUNCTION" || exit 1
+  UrlRewriteFunction="$REWRITE_FUNCTION" \
+  WebAclArn="$WEB_ACL_ARN" || exit 1
 
 # Show what the Route53 records should point to.
 echo "Distribution Domain:"
